@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>IRONFORGE — Precision Grill Manufacturing</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --iron: #1a1a1a;
+      --forge: #0d0d0d;
+      --ember: #c8410a;
+      --heat: #e8650a;
+      --steel: #8a8a8a;
+      --ash: #3a3a3a;
+      --chrome: #d4d4d4;
+      --white: #f5f2ee;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--forge);
+      color: var(--white);
+      font-family: 'Barlow', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden;
+      cursor: crosshair;
+    }
+
+    /* ── NOISE TEXTURE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.04;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px 60px;
+      background: linear-gradient(to bottom, rgba(13,13,13,0.95), transparent);
+    }
+
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2rem;
+      letter-spacing: 0.15em;
+      color: var(--white);
+      text-decoration: none;
+      position: relative;
+    }
+    .nav-logo span { color: var(--ember); }
+
+    .nav-links {
+      display: flex;
+      gap: 40px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 600;
+      font-size: 0.8rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--steel);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .nav-links a:hover { color: var(--ember); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-left {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 140px 60px 80px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-eyebrow {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--ember);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: fadeUp 1s ease 0.2s both;
+    }
+    .hero-eyebrow::before {
+      content: '';
+      width: 40px;
+      height: 1px;
+      background: var(--ember);
+    }
+
+    .hero-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(5rem, 10vw, 10rem);
+      line-height: 0.9;
+      letter-spacing: 0.02em;
+      color: var(--white);
+      animation: fadeUp 1s ease 0.4s both;
+    }
+    .hero-title em {
+      display: block;
+      color: var(--ember);
+      font-style: normal;
+    }
+
+    .hero-sub {
+      margin-top: 32px;
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--steel);
+      max-width: 400px;
+      animation: fadeUp 1s ease 0.6s both;
+    }
+
+    .hero-cta {
+      margin-top: 48px;
+      display: flex;
+      gap: 20px;
+      animation: fadeUp 1s ease 0.8s both;
+    }
+
+    .btn-primary {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 16px 40px;
+      background: var(--ember);
+      color: var(--white);
+      border: none;
+      cursor: crosshair;
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.3s;
+    }
+    .btn-primary::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--heat);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s ease;
+    }
+    .btn-primary:hover::after { transform: scaleX(1); }
+    .btn-primary span { position: relative; z-index: 1; }
+
+    .btn-outline {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 600;
+      font-size: 0.85rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 16px 40px;
+      background: transparent;
+      color: var(--chrome);
+      border: 1px solid var(--ash);
+      cursor: crosshair;
+      text-decoration: none;
+      transition: border-color 0.3s, color 0.3s;
+    }
+    .btn-outline:hover { border-color: var(--chrome); color: var(--white); }
+
+    .hero-right {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-grill-visual {
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(0deg, transparent, transparent 38px, rgba(200,65,10,0.08) 38px, rgba(200,65,10,0.08) 40px),
+        repeating-linear-gradient(90deg, transparent, transparent 38px, rgba(200,65,10,0.08) 38px, rgba(200,65,10,0.08) 40px);
+      animation: gridPulse 6s ease-in-out infinite;
+    }
+
+    .hero-grill-visual::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 60% 40%, rgba(200,65,10,0.25) 0%, transparent 65%);
+    }
+
+    .hero-grill-visual::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 50%;
+      background: linear-gradient(to top, var(--forge), transparent);
+    }
+
+    /* Decorative grill bars */
+    .grill-bars {
+      position: absolute;
+      inset: 80px 40px;
+      display: grid;
+      grid-template-rows: repeat(12, 1fr);
+      gap: 20px;
+      z-index: 1;
+    }
+    .grill-bar {
+      background: linear-gradient(to right, #2a2a2a, #4a4a4a, #2a2a2a);
+      border-radius: 3px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05);
+      animation: barGlow 4s ease-in-out infinite;
+    }
+    .grill-bar:nth-child(odd) { animation-delay: 0.5s; }
+    .grill-bar:nth-child(3n) { animation-delay: 1s; }
+
+    @keyframes barGlow {
+      0%, 100% { box-shadow: 0 4px 20px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05); }
+      50% { box-shadow: 0 4px 30px rgba(200,65,10,0.15), inset 0 1px 0 rgba(255,255,255,0.1); }
+    }
+
+    .hero-stats {
+      position: absolute;
+      bottom: 80px;
+      right: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      z-index: 3;
+      animation: fadeUp 1s ease 1s both;
+    }
+
+    .stat-item {
+      text-align: right;
+      border-right: 2px solid var(--ember);
+      padding-right: 16px;
+    }
+    .stat-number {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.5rem;
+      color: var(--white);
+      line-height: 1;
+    }
+    .stat-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--steel);
+    }
+
+    /* ── MARQUEE ── */
+    .marquee-strip {
+      background: var(--ember);
+      padding: 14px 0;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .marquee-inner {
+      display: inline-block;
+      animation: marquee 20s linear infinite;
+    }
+    .marquee-text {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.1rem;
+      letter-spacing: 0.15em;
+      color: var(--white);
+      padding: 0 48px;
+    }
+    .marquee-text::before {
+      content: '✦';
+      margin-right: 48px;
+      opacity: 0.6;
+    }
+
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    /* ── SECTION BASE ── */
+    section { padding: 120px 60px; }
+
+    .section-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--ember);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .section-label::before { content: ''; width: 40px; height: 1px; background: var(--ember); }
+
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3rem, 6vw, 6rem);
+      line-height: 0.95;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── ABOUT ── */
+    .about {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+      background: var(--iron);
+      position: relative;
+    }
+
+    .about::before {
+      content: 'IRONFORGE';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20vw;
+      color: rgba(255,255,255,0.02);
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    .about-text {
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: var(--steel);
+      margin-top: 28px;
+    }
+    .about-text strong { color: var(--chrome); font-weight: 400; }
+
+    .about-features {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+      margin-top: 48px;
+    }
+    .feature-card {
+      background: var(--forge);
+      padding: 28px 24px;
+      border-top: 2px solid transparent;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .feature-card:hover { border-color: var(--ember); transform: translateY(-4px); }
+    .feature-icon {
+      font-size: 1.8rem;
+      margin-bottom: 12px;
+      display: block;
+    }
+    .feature-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--chrome);
+      margin-bottom: 8px;
+    }
+    .feature-desc {
+      font-size: 0.85rem;
+      line-height: 1.6;
+      color: var(--steel);
+    }
+
+    .about-visual {
+      position: relative;
+    }
+
+    .forge-diagram {
+      width: 100%;
+      aspect-ratio: 1;
+      border: 1px solid var(--ash);
+      position: relative;
+      overflow: hidden;
+    }
+    .forge-diagram-inner {
+      position: absolute;
+      inset: 20px;
+      border: 1px solid rgba(200,65,10,0.3);
+      display: grid;
+      grid-template-rows: repeat(8, 1fr);
+      gap: 8px;
+      padding: 16px;
+    }
+    .forge-rod {
+      background: linear-gradient(to right, #333, #666, #555, #333);
+      border-radius: 4px;
+      position: relative;
+      overflow: hidden;
+    }
+    .forge-rod::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent 0%, rgba(200,65,10,0.4) 50%, transparent 100%);
+      animation: heatSweep 3s ease-in-out infinite;
+    }
+    .forge-rod:nth-child(2)::after { animation-delay: 0.4s; }
+    .forge-rod:nth-child(3)::after { animation-delay: 0.8s; }
+    .forge-rod:nth-child(4)::after { animation-delay: 1.2s; }
+    .forge-rod:nth-child(5)::after { animation-delay: 1.6s; }
+    .forge-rod:nth-child(6)::after { animation-delay: 2.0s; }
+    .forge-rod:nth-child(7)::after { animation-delay: 2.4s; }
+    .forge-rod:nth-child(8)::after { animation-delay: 2.8s; }
+
+    @keyframes heatSweep {
+      0% { transform: translateX(-100%); opacity: 0; }
+      20% { opacity: 1; }
+      80% { opacity: 1; }
+      100% { transform: translateX(200%); opacity: 0; }
+    }
+
+    .forge-diagram-corner {
+      position: absolute;
+      width: 20px; height: 20px;
+      border-color: var(--ember);
+      border-style: solid;
+    }
+    .forge-diagram-corner.tl { top: 4px; left: 4px; border-width: 2px 0 0 2px; }
+    .forge-diagram-corner.tr { top: 4px; right: 4px; border-width: 2px 2px 0 0; }
+    .forge-diagram-corner.bl { bottom: 4px; left: 4px; border-width: 0 0 2px 2px; }
+    .forge-diagram-corner.br { bottom: 4px; right: 4px; border-width: 0 2px 2px 0; }
+
+    /* ── PRODUCTS ── */
+    .products { background: var(--forge); }
+
+    .products-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 64px;
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+
+    .product-card {
+      background: var(--iron);
+      position: relative;
+      overflow: hidden;
+      cursor: crosshair;
+    }
+
+    .product-card:first-child {
+      grid-row: span 2;
+    }
+
+    .product-visual {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+    }
+
+    .product-card:first-child .product-visual {
+      aspect-ratio: auto;
+      height: 400px;
+    }
+
+    .product-grill {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-rows: repeat(var(--rows, 6), 1fr);
+      gap: var(--gap, 10px);
+      transform: perspective(600px) rotateX(20deg);
+      transition: transform 0.5s ease;
+    }
+    .product-card:hover .product-grill {
+      transform: perspective(600px) rotateX(8deg) scale(1.05);
+    }
+
+    .p-rod {
+      background: linear-gradient(to right, #2a2a2a, #5a5a5a, #4a4a4a, #2a2a2a);
+      border-radius: 3px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+
+    .product-overlay {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, rgba(200,65,10,0.15) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+    .product-card:hover .product-overlay { opacity: 1; }
+
+    .product-info {
+      padding: 28px 28px 32px;
+      border-top: 1px solid var(--ash);
+    }
+    .product-cat {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.68rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--ember);
+      margin-bottom: 8px;
+    }
+    .product-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.8rem;
+      letter-spacing: 0.04em;
+      color: var(--white);
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+    .product-desc {
+      font-size: 0.85rem;
+      line-height: 1.65;
+      color: var(--steel);
+    }
+    .product-specs {
+      display: flex;
+      gap: 20px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    .spec { font-family: 'Barlow Condensed', sans-serif; font-size: 0.75rem; color: var(--steel); }
+    .spec strong { color: var(--chrome); display: block; font-size: 1rem; }
+
+    /* ── PROCESS ── */
+    .process {
+      background: var(--iron);
+      position: relative;
+      overflow: hidden;
+    }
+    .process::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 300px;
+      background: linear-gradient(to bottom, rgba(200,65,10,0.04), transparent);
+      pointer-events: none;
+    }
+
+    .process-steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 40px;
+      margin-top: 80px;
+    }
+
+    .step {
+      position: relative;
+    }
+    .step::before {
+      content: '';
+      position: absolute;
+      top: 24px;
+      left: calc(100% + 0px);
+      right: -40px;
+      height: 1px;
+      background: linear-gradient(to right, var(--ash), transparent);
+    }
+    .step:last-child::before { display: none; }
+
+    .step-number {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 4rem;
+      color: rgba(200,65,10,0.15);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .step-line {
+      width: 48px;
+      height: 2px;
+      background: var(--ember);
+      margin-bottom: 20px;
+    }
+    .step-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--chrome);
+      margin-bottom: 12px;
+    }
+    .step-desc {
+      font-size: 0.88rem;
+      line-height: 1.7;
+      color: var(--steel);
+    }
+
+    /* ── GALLERY ── */
+    .gallery {
+      background: var(--forge);
+      padding: 120px 0;
+    }
+    .gallery-header { padding: 0 60px; margin-bottom: 48px; }
+
+    .gallery-strip {
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+      padding: 0 60px;
+      scrollbar-width: none;
+    }
+    .gallery-strip::-webkit-scrollbar { display: none; }
+
+    .gallery-item {
+      flex: 0 0 300px;
+      height: 400px;
+      background: var(--iron);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .gallery-grill {
+      position: absolute;
+      inset: 20px;
+      display: grid;
+      gap: 8px;
+      transition: transform 0.5s ease;
+    }
+    .gallery-item:hover .gallery-grill { transform: scale(1.05); }
+
+    .g-pattern-1 { grid-template-rows: repeat(10, 1fr); }
+    .g-pattern-2 { grid-template-columns: repeat(6, 1fr); }
+    .g-pattern-3 {
+      grid-template-rows: repeat(6, 1fr);
+      grid-template-columns: repeat(6, 1fr);
+    }
+    .g-pattern-4 { grid-template-rows: repeat(14, 1fr); }
+    .g-pattern-5 { grid-template-columns: repeat(4, 1fr); }
+
+    .g-bar-h {
+      background: linear-gradient(to right, #252525, #555, #252525);
+      border-radius: 3px;
+    }
+    .g-bar-v {
+      background: linear-gradient(to bottom, #252525, #555, #252525);
+      border-radius: 3px;
+    }
+    .g-cell {
+      background: #1f1f1f;
+      border: 1px solid #333;
+    }
+
+    .gallery-item-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(13,13,13,0.9) 0%, transparent 50%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 24px;
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+    .gallery-item:hover .gallery-item-overlay { opacity: 1; }
+    .g-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.6rem;
+      color: var(--white);
+    }
+    .g-sub {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--ember);
+    }
+
+    /* ── TESTIMONIALS ── */
+    .testimonials {
+      background: var(--iron);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+    }
+
+    .testimonials-left {
+      padding: 120px 60px;
+      background: var(--ember);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .testimonials-left .section-label { color: rgba(255,255,255,0.7); }
+    .testimonials-left .section-label::before { background: rgba(255,255,255,0.7); }
+    .testimonials-left .section-title { color: var(--white); }
+
+    .testimonial-list {
+      padding: 80px 60px;
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+
+    .testimonial {
+      border-left: 2px solid var(--ash);
+      padding-left: 28px;
+      transition: border-color 0.3s;
+    }
+    .testimonial:hover { border-color: var(--ember); }
+
+    .testimonial-text {
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--chrome);
+      font-style: italic;
+      margin-bottom: 16px;
+    }
+    .testimonial-author {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.8rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--ember);
+    }
+    .testimonial-role {
+      font-size: 0.8rem;
+      color: var(--steel);
+    }
+
+    /* ── CONTACT ── */
+    .contact {
+      background: var(--forge);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: start;
+    }
+
+    .contact-info { padding-top: 8px; }
+    .contact-detail {
+      margin-top: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .contact-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    .contact-icon {
+      width: 40px;
+      height: 40px;
+      border: 1px solid var(--ash);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+      color: var(--ember);
+    }
+    .contact-item-text p { font-size: 0.85rem; color: var(--steel); }
+    .contact-item-text strong { color: var(--chrome); font-weight: 400; font-size: 0.95rem; }
+
+    .contact-form { display: flex; flex-direction: column; gap: 16px; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    .form-group { display: flex; flex-direction: column; gap: 8px; }
+    .form-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--steel);
+    }
+    .form-input, .form-textarea {
+      background: var(--iron);
+      border: 1px solid var(--ash);
+      color: var(--white);
+      padding: 14px 16px;
+      font-family: 'Barlow', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 300;
+      outline: none;
+      transition: border-color 0.3s;
+      width: 100%;
+    }
+    .form-input:focus, .form-textarea:focus { border-color: var(--ember); }
+    .form-textarea { height: 120px; resize: none; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--iron);
+      padding: 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--ash);
+    }
+
+    .footer-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2rem;
+      letter-spacing: 0.1em;
+    }
+    .footer-logo span { color: var(--ember); }
+
+    .footer-copy {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      color: var(--steel);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 32px;
+    }
+    .footer-links a {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--steel);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .footer-links a:hover { color: var(--ember); }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes gridPulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="#" class="nav-logo">IRON<span>FORGE</span></a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#products">Products</a></li>
+      <li><a href="#process">Process</a></li>
+      <li><a href="#gallery">Gallery</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-left">
+      <p class="hero-eyebrow">Est. 1987 — Industrial Precision</p>
+      <h1 class="hero-title">FORGED<em>IN IRON</em></h1>
+      <p class="hero-sub">Premium iron grill manufacturing for commercial kitchens, industrial barbecue, and custom architectural applications. Built to last generations.</p>
+      <div class="hero-cta">
+        <a href="#products" class="btn-primary"><span>View Products</span></a>
+        <a href="#contact" class="btn-outline">Get a Quote</a>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-grill-visual"></div>
+      <div class="grill-bars">
+        <div class="grill-bar"></div><div class="grill-bar"></div>
+        <div class="grill-bar"></div><div class="grill-bar"></div>
+        <div class="grill-bar"></div><div class="grill-bar"></div>
+        <div class="grill-bar"></div><div class="grill-bar"></div>
+        <div class="grill-bar"></div><div class="grill-bar"></div>
+        <div class="grill-bar"></div><div class="grill-bar"></div>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-number">38+</div>
+          <div class="stat-label">Years Operating</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">12K</div>
+          <div class="stat-label">Units Produced</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">94</div>
+          <div class="stat-label">Countries Served</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee-strip">
+    <div class="marquee-inner">
+      <span class="marquee-text">Commercial Grills</span>
+      <span class="marquee-text">Architectural Ironwork</span>
+      <span class="marquee-text">Custom Fabrication</span>
+      <span class="marquee-text">Industrial BBQ</span>
+      <span class="marquee-text">Restaurant Equipment</span>
+      <span class="marquee-text">Cast Iron Grates</span>
+      <span class="marquee-text">Outdoor Grilling</span>
+      <span class="marquee-text">Commercial Grills</span>
+      <span class="marquee-text">Architectural Ironwork</span>
+      <span class="marquee-text">Custom Fabrication</span>
+      <span class="marquee-text">Industrial BBQ</span>
+      <span class="marquee-text">Restaurant Equipment</span>
+      <span class="marquee-text">Cast Iron Grates</span>
+      <span class="marquee-text">Outdoor Grilling</span>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <section class="about" id="about">
+    <div class="about-content">
+      <p class="section-label reveal">Our Story</p>
+      <h2 class="section-title reveal reveal-delay-1">STEEL &amp;<br>SOUL</h2>
+      <p class="about-text reveal reveal-delay-2">Founded in 1987 in Pittsburgh's steel belt, <strong>Ironforge</strong> has spent nearly four decades perfecting the craft of iron grill manufacturing. Every grate, every rod, every weld is executed with the same obsessive attention to <strong>metallurgical precision</strong> that defined American industrial craft.</p>
+      <p class="about-text reveal reveal-delay-2" style="margin-top:16px;">We supply restaurants, hotel chains, sporting venues, and private estates worldwide — each order crafted to exact specification, from raw iron to finished product in our 120,000 sq ft facility.</p>
+      <div class="about-features reveal reveal-delay-3">
+        <div class="feature-card">
+          <span class="feature-icon">⚒️</span>
+          <div class="feature-name">Hand-Welded</div>
+          <div class="feature-desc">Every joint hand-welded by certified ironworkers with 10+ years experience.</div>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">🔥</span>
+          <div class="feature-name">Heat Treated</div>
+          <div class="feature-desc">Industrial heat treatment for superior hardness and longevity.</div>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">📐</span>
+          <div class="feature-name">Precision Cut</div>
+          <div class="feature-desc">CNC plasma cutting accurate to 0.1mm tolerances on every piece.</div>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">🛡️</span>
+          <div class="feature-name">Rust-Proof</div>
+          <div class="feature-desc">Triple-coat seasoning and industrial powder coating available.</div>
+        </div>
+      </div>
+    </div>
+    <div class="about-visual reveal reveal-delay-2">
+      <div class="forge-diagram">
+        <div class="forge-diagram-corner tl"></div>
+        <div class="forge-diagram-corner tr"></div>
+        <div class="forge-diagram-corner bl"></div>
+        <div class="forge-diagram-corner br"></div>
+        <div class="forge-diagram-inner">
+          <div class="forge-rod"></div><div class="forge-rod"></div>
+          <div class="forge-rod"></div><div class="forge-rod"></div>
+          <div class="forge-rod"></div><div class="forge-rod"></div>
+          <div class="forge-rod"></div><div class="forge-rod"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRODUCTS -->
+  <section class="products" id="products">
+    <div class="products-header">
+      <div>
+        <p class="section-label reveal">What We Make</p>
+        <h2 class="section-title reveal reveal-delay-1">OUR<br>PRODUCTS</h2>
+      </div>
+      <a href="#contact" class="btn-outline reveal">Request Catalog</a>
+    </div>
+    <div class="products-grid">
+
+      <!-- LARGE CARD -->
+      <div class="product-card reveal">
+        <div class="product-visual" style="height: 460px;">
+          <div class="product-grill" style="--rows:10; --gap:14px;">
+            <div class="p-rod"></div><div class="p-rod"></div><div class="p-rod"></div>
+            <div class="p-rod"></div><div class="p-rod"></div><div class="p-rod"></div>
+            <div class="p-rod"></div><div class="p-rod"></div><div class="p-rod"></div><div class="p-rod"></div>
+          </div>
+          <div class="product-overlay"></div>
+        </div>
+        <div class="product-info">
+          <div class="product-cat">Flagship Series</div>
+          <div class="product-name">TITAN PRO-X</div>
+          <div class="product-desc">Our most popular commercial grill grate, engineered for high-throughput restaurant use. Cast iron with machined flat surface for even heat distribution.</div>
+          <div class="product-specs">
+            <div class="spec"><strong>Cast Iron</strong>Material</div>
+            <div class="spec"><strong>18×24"</strong>Standard Size</div>
+            <div class="spec"><strong>8.2 kg</strong>Weight</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 2 -->
+      <div class="product-card reveal reveal-delay-1">
+        <div class="product-visual">
+          <div class="product-grill" style="--rows:7; --gap:9px;">
+            <div class="p-rod"></div><div class="p-rod"></div><div class="p-rod"></div>
+            <div class="p-rod"></div><div class="p-rod"></div><div class="p-rod"></div><div class="p-rod"></div>
+          </div>
+          <div class="product-overlay"></div>
+        </div>
+        <div class="product-info">
+          <div class="product-cat">Commercial Series</div>
+          <div class="product-name">GRIDMASTER V3</div>
+          <div class="product-desc">Medium-duty flat top grill grate, ideal for hotels and catering operations.</div>
+          <div class="product-specs">
+            <div class="spec"><strong>Wrought Iron</strong>Material</div>
+            <div class="spec"><strong>Custom</strong>Sizing</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 3 -->
+      <div class="product-card reveal reveal-delay-2">
+        <div class="product-visual">
+          <div class="product-grill" style="--rows:5; --gap:12px;">
+            <div class="p-rod"></div><div class="p-rod"></div><div class="p-rod"></div>
+            <div class="p-rod"></div><div class="p-rod"></div>
+          </div>
+          <div class="product-overlay"></div>
+        </div>
+        <div class="product-info">
+          <div class="product-cat">Outdoor Series</div>
+          <div class="product-name">FIELD FORGE</div>
+          <div class="product-desc">Heavy-gauge outdoor grill grate built for extreme weather conditions and open-fire cooking.</div>
+          <div class="product-specs">
+            <div class="spec"><strong>Cast Iron</strong>Material</div>
+            <div class="spec"><strong>Seasoned</strong>Finish</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 4 -->
+      <div class="product-card reveal reveal-delay-1">
+        <div class="product-visual">
+          <div class="product-grill" style="--rows:9; --gap:7px;">
+            <div class="p-rod"></div><div class="p-rod"></div><div class="p-rod"></div>
+            <div class="p-rod"></div><div class="p-rod"></div><div class="p-rod"></div>
+            <div class="p-rod"></div><div class="p-rod"></div><div class="p-rod"></div>
+          </div>
+          <div class="product-overlay"></div>
+        </div>
+        <div class="product-info">
+          <div class="product-cat">Architectural</div>
+          <div class="product-name">IRONVEIL SCREEN</div>
+          <div class="product-desc">Decorative iron grill screens for facades, railings, and interior design applications.</div>
+          <div class="product-specs">
+            <div class="spec"><strong>Mild Steel</strong>Material</div>
+            <div class="spec"><strong>Powder Coat</strong>Finish</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section class="process" id="process">
+    <p class="section-label reveal">How We Work</p>
+    <h2 class="section-title reveal reveal-delay-1">FROM ORE<br>TO ORDER</h2>
+    <div class="process-steps">
+      <div class="step reveal">
+        <div class="step-number">01</div>
+        <div class="step-line"></div>
+        <div class="step-title">Design &amp; Spec</div>
+        <div class="step-desc">Our engineers work with you to define exact dimensions, material grade, finish type, and load tolerances for your application.</div>
+      </div>
+      <div class="step reveal reveal-delay-1">
+        <div class="step-number">02</div>
+        <div class="step-line"></div>
+        <div class="step-title">Raw Casting</div>
+        <div class="step-desc">Iron is melted and poured into precision sand molds. Our foundry operates at 1,450°C to ensure consistent grain structure.</div>
+      </div>
+      <div class="step reveal reveal-delay-2">
+        <div class="step-number">03</div>
+        <div class="step-line"></div>
+        <div class="step-title">Machining</div>
+        <div class="step-desc">CNC grinding and milling achieve food-safe flat surfaces and precise rod spacing. Every unit is measured and logged.</div>
+      </div>
+      <div class="step reveal reveal-delay-3">
+        <div class="step-number">04</div>
+        <div class="step-line"></div>
+        <div class="step-title">QC &amp; Ship</div>
+        <div class="step-desc">Full dimensional and stress inspection before crating. We ship worldwide with freight partners and installation guides.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section class="gallery" id="gallery">
+    <div class="gallery-header">
+      <p class="section-label reveal">Portfolio</p>
+      <h2 class="section-title reveal reveal-delay-1">OUR WORK<br>IN THE FIELD</h2>
+    </div>
+    <div class="gallery-strip">
+      <div class="gallery-item">
+        <div class="gallery-grill g-pattern-1">
+          <div class="g-bar-h"></div><div class="g-bar-h"></div><div class="g-bar-h"></div>
+          <div class="g-bar-h"></div><div class="g-bar-h"></div><div class="g-bar-h"></div>
+          <div class="g-bar-h"></div><div class="g-bar-h"></div><div class="g-bar-h"></div><div class="g-bar-h"></div>
+        </div>
+        <div class="gallery-item-overlay">
+          <div class="g-sub">Steakhouse Series</div>
+          <div class="g-title">Nobu London</div>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <div class="gallery-grill g-pattern-2">
+          <div class="g-bar-v"></div><div class="g-bar-v"></div><div class="g-bar-v"></div>
+          <div class="g-bar-v"></div><div class="g-bar-v"></div><div class="g-bar-v"></div>
+        </div>
+        <div class="gallery-item-overlay">
+          <div class="g-sub">Architectural</div>
+          <div class="g-title">Park Ave Tower</div>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <div class="gallery-grill g-pattern-3" style="display:grid; grid-template-columns: repeat(6,1fr); grid-template-rows:repeat(6,1fr); gap:6px;">
+          <div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div>
+          <div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div>
+          <div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div>
+          <div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div>
+          <div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div>
+          <div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div><div class="g-cell"></div>
+        </div>
+        <div class="gallery-item-overlay">
+          <div class="g-sub">Waffle Grid</div>
+          <div class="g-title">Hotel Fasano</div>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <div class="gallery-grill g-pattern-4">
+          <div class="g-bar-h"></div><div class="g-bar-h"></div><div class="g-bar-h"></div>
+          <div class="g-bar-h"></div><div class="g-bar-h"></div><div class="g-bar-h"></div>
+          <div class="g-bar-h"></div><div class="g-bar-h"></div><div class="g-bar-h"></div>
+          <div class="g-bar-h"></div><div class="g-bar-h"></div><div class="g-bar-h"></div>
+          <div class="g-bar-h"></div><div class="g-bar-h"></div>
+        </div>
+        <div class="gallery-item-overlay">
+          <div class="g-sub">Fine-Pitch</div>
+          <div class="g-title">Eleven Madison</div>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <div class="gallery-grill g-pattern-5">
+          <div class="g-bar-v"></div><div class="g-bar-v"></div>
+          <div class="g-bar-v"></div><div class="g-bar-v"></div>
+        </div>
+        <div class="gallery-item-overlay">
+          <div class="g-sub">Heavy Duty</div>
+          <div class="g-title">Dallas BBQ Arena</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="testimonials">
+    <div class="testimonials-left">
+      <p class="section-label">What Clients Say</p>
+      <h2 class="section-title" style="color:var(--white);">TRUSTED<br>BY THE<br>BEST</h2>
+    </div>
+    <div class="testimonial-list">
+      <div class="testimonial reveal">
+        <p class="testimonial-text">"Ironforge supplied grill grates for all 14 of our restaurant locations. The consistency between units is remarkable — every piece arrives perfect."</p>
+        <div class="testimonial-author">Marcus Chen</div>
+        <div class="testimonial-role">Head of Procurement, NobleGroup Hospitality</div>
+      </div>
+      <div class="testimonial reveal reveal-delay-1">
+        <p class="testimonial-text">"We've tried six other suppliers. Nobody matches the heat retention and surface finish of Ironforge cast iron. It's a different class of product."</p>
+        <div class="testimonial-author">Sabrina Kohl</div>
+        <div class="testimonial-role">Executive Chef, The Ember Room NYC</div>
+      </div>
+      <div class="testimonial reveal reveal-delay-2">
+        <p class="testimonial-text">"Their custom fabrication team turned around a 200-unit architectural screen order in 6 weeks. Flawless communication and zero defects on delivery."</p>
+        <div class="testimonial-author">Remi Fontaine</div>
+        <div class="testimonial-role">Project Director, Atelier Architecture Paris</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact" id="contact">
+    <div class="contact-info">
+      <p class="section-label reveal">Get In Touch</p>
+      <h2 class="section-title reveal reveal-delay-1">LET'S BUILD<br>SOMETHING</h2>
+      <div class="contact-detail">
+        <div class="contact-item reveal">
+          <div class="contact-icon">📍</div>
+          <div class="contact-item-text">
+            <strong>1400 Ironworks Road, Pittsburgh, PA 15201</strong>
+            <p>Factory &amp; Showroom</p>
+          </div>
+        </div>
+        <div class="contact-item reveal reveal-delay-1">
+          <div class="contact-icon">📞</div>
+          <div class="contact-item-text">
+            <strong>+1 (412) 880-4400</strong>
+            <p>Mon–Fri, 7am–5pm EST</p>
+          </div>
+        </div>
+        <div class="contact-item reveal reveal-delay-2">
+          <div class="contact-icon">✉️</div>
+          <div class="contact-item-text">
+            <strong>sales@ironforge-grills.com</strong>
+            <p>Quotes and custom orders</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="contact-form reveal reveal-delay-1">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">First Name</label>
+          <input class="form-input" type="text" placeholder="John"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name</label>
+          <input class="form-input" type="text" placeholder="Smith"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Company</label>
+        <input class="form-input" type="text" placeholder="Your Restaurant or Business"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" type="email" placeholder="john@company.com"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Product Interest</label>
+        <input class="form-input" type="text" placeholder="e.g. Commercial grill grates, custom sizing"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Message</label>
+        <textarea class="form-textarea" placeholder="Tell us about your project, quantity needed, timeline..."></textarea>
+      </div>
+      <button class="btn-primary" style="border:none; font-size:0.85rem; cursor:crosshair; padding:18px 40px; width:100%; text-align:center; letter-spacing:0.15em;">
+        <span>SEND INQUIRY →</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">IRON<span>FORGE</span></div>
+    <div class="footer-copy">© 2026 Ironforge Manufacturing Co. All rights reserved.</div>
+    <div class="footer-links">
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="#">Careers</a>
+      <a href="#">Press</a>
+    </div>
+  </footer>
+
+  <script>
+    // Scroll reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // Smooth nav link behavior
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const target = document.querySelector(a.getAttribute('href'));
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
